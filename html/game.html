@@ -27,9 +27,10 @@
             height: 10px;
             top: 50%;
             left: 50%;
-            border-width: 1px;
+            font-size: 30px;
+            /* border-width: 1px;
             border-style: solid;
-            border-color: var(--color-grey);
+            border-color: var(--color-grey); */
         }
 
         a {
@@ -40,13 +41,6 @@
         a:hover {
             text-decoration: none;
             color: var(--font-color);
-        }
-
-        table {
-            /* width: 300px; */
-            /* height: 50vh; */
-            border-width: 1px;
-            border-style: solid;
         }
     </style>
 
@@ -83,7 +77,7 @@
                         tr.appendChild(td);
                     } else if (data.board[i][j] == -3) {
                         let span = document.createElement("span");
-                        span.innerText = "🇰🇵";
+                        span.innerText = "🚩";
                         td.appendChild(span);
                         tr.appendChild(td);
 
@@ -192,11 +186,11 @@
     <div id="main">
         <table id="board">
         </table>
-
+        <hr>
         <div class="center">
             <div>
-                <h2>Your Score 😁 <span id="playerScore">0</span></h2>
-                <h2>Opponent Score 😈 <span id="opponentScore">0</span></h2>
+                <h3>Your Score 😁 <span id="playerScore">0</span></h3>
+                <h3>Opponent Score 😈 <span id="opponentScore">0</span></h3>
                 <h4><span id="gameState">Loading..</span></h4>
             </div>
         </div>
