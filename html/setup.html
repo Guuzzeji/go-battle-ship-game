@@ -57,45 +57,44 @@
 
             $("#submit").on("click", async () => {
                 let isReady = true;
-
-                for (const [key, e] of Object.entries($("input[type=text]"))) {
-                    if (key == "length" || key == "prevObject") {
-                        console.log(key, e);
-                        continue;
-                    }
-
-                    if (e.value == "" && e.value == undefined && e.value == null) {
-                        isReady = false;
-                    }
-
-                    e.value = e.value.trim();
-
-                    try {
-                        if (isReady) {
-                            let values = e.value.split(",");
-
-                            if (values.length != 2) {
-                                throw new Error();
-                            }
-
-                            let res = await fetch(`/api/g/${gameId}/add-mine/${playerId}`, {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json"
-                                },
-                                body: JSON.stringify({
-                                    x: parseInt(values[0]),
-                                    y: parseInt(values[1])
-                                })
-                            });
-
-                            if (res.status != 200) {
+                for (const e of document.getElementsByTagName("input")) {
+                    if (e != undefined) {
+                        let failRequest = false;
+                        console.log(e);
+                        if (e.value == "") {
+                            isReady = false;
+                            failRequest = true;
+                        }
+                        if (!failRequest) {
+                            try {
+                                e.disabled = true;
+                                e.value = e.value.trim();
+                                let values = e.value.split(",");
+                                if (values.length != 2) {
+                                    e.disabled = false;
+                                    throw new Error("Not enough values");
+                                }
+                                let res = await fetch(`/api/g/${gameId}/add-mine/${playerId}`, {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json"
+                                    },
+                                    body: JSON.stringify({
+                                        x: parseInt(values[0]),
+                                        y: parseInt(values[1])
+                                    })
+                                }).then(res => res.json());
+                                if (!res.done) {
+                                    throw new Error(JSON.stringify(res));
+                                }
+                                console.log(res);
+                            } catch (error) {
+                                console.log(error);
                                 isReady = false;
+                                failRequest = true;
+                                e.disabled = false;
                             }
                         }
-                    } catch (error) {
-                        console.log(error);
-                        isReady = false;
                     }
                 }
 
@@ -113,7 +112,7 @@
 <body>
     <div id="main" class="center-screen">
         <h1>☠️ Place Mines</h1>
-        <p>Value should be between 0 and 9 for both x and y</p>
+        <p>Value should be between 0 and 4 for both x and y</p>
         <p id="error" hidden><b>Error with one or more of inputs</b></p>
         <div class="center" style="padding: 15px;">
             <input type="text" placeholder="x,y">

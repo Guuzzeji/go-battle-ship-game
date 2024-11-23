@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-const boardSize int = 10
+const boardSize int = 5
 const maxMines int = 5
 
 // Enums

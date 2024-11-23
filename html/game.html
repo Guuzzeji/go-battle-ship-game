@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.⚪">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
-    <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js"
-        integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <title>💣 Minesweeper</title>
     <style>
         body {
@@ -137,6 +137,8 @@
         }
 
         $(document).ready(() => {
+            $("#main").hide();
+            $("#main").fadeIn("slow");
             const url = new URL(window.location.href);
             const gameId = url.pathname.split("/")[2];
             const playerId = url.pathname.split("/")[4];
@@ -180,21 +182,23 @@
                     $("#gameState").text("Game Over...");
                 }
 
-            }, 1000);
+            }, 300);
 
         });
     </script>
 </head>
 
 <body>
-    <table id="board">
-    </table>
+    <div id="main">
+        <table id="board">
+        </table>
 
-    <div class="center">
-        <div>
-            <h2>Your Score 😁 <span id="playerScore">0</span></h2>
-            <h2>Opponent Score 😈 <span id="opponentScore">0</span></h2>
-            <h4><span id="gameState">Loading..</span></h4>
+        <div class="center">
+            <div>
+                <h2>Your Score 😁 <span id="playerScore">0</span></h2>
+                <h2>Opponent Score 😈 <span id="opponentScore">0</span></h2>
+                <h4><span id="gameState">Loading..</span></h4>
+            </div>
         </div>
     </div>
 </body>

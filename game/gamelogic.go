@@ -43,17 +43,22 @@ func (g *GameLogic) AddPlayer() (string, error) {
 func (g *GameLogic) SetPlayerMine(id string, x int, y int) error {
 	if g.GameState == SetUp {
 		if id[0] == '1' {
-			g.PlayerOne.SetMine(x, y)
+			_, err := g.PlayerOne.SetMine(x, y)
+
+			if g.PlayerOne.Mines >= maxMines && g.PlayerTwo.Mines >= maxMines {
+				g.GameState = Playing
+			}
+
+			return err
 		} else {
-			g.PlayerTwo.SetMine(x, y)
-		}
+			_, err := g.PlayerTwo.SetMine(x, y)
 
-		if g.PlayerOne.Mines >= maxMines && g.PlayerTwo.Mines >= maxMines && g.GameState == SetUp {
-			g.GameState = Playing
-			return nil
-		}
+			if g.PlayerOne.Mines >= maxMines && g.PlayerTwo.Mines >= maxMines {
+				g.GameState = Playing
+			}
 
-		return nil
+			return err
+		}
 	}
 
 	return fmt.Errorf("game not set up state")
