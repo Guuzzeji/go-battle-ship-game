@@ -47,6 +47,14 @@
             const playerId = url.pathname.split("/")[4];
             console.log(gameId, playerId);
 
+            fetch(`/api/g/${gameId}/check`, {
+                method: "GET"
+            }).then(res => {
+                if (res.status != 200) {
+                    window.location.href = "/error";
+                }
+            });
+
             $("#submit").on("click", async () => {
                 let isReady = true;
 
@@ -106,7 +114,7 @@
     <div id="main" class="center-screen">
         <h1>☠️ Place Mines</h1>
         <p>Value should be between 0 and 9 for both x and y</p>
-        <p id="error" hidden><b>Error with one or mre of inputs</b></p>
+        <p id="error" hidden><b>Error with one or more of inputs</b></p>
         <div class="center" style="padding: 15px;">
             <input type="text" placeholder="x,y">
             <input type="text" placeholder="x,y">

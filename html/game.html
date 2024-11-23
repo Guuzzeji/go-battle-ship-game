@@ -34,7 +34,11 @@
 
         a {
             text-decoration: none;
-            pointer-events: none;
+            color: var(--font-color);
+        }
+
+        a:hover {
+            text-decoration: none;
             color: var(--font-color);
         }
 
@@ -47,129 +51,150 @@
     </style>
 
     <script>
+
+        async function loadBoard(gameId, playerId) {
+            $("#board").empty();
+            let data = await fetch(`/api/g/${gameId}/board/${playerId}`, {
+                method: "GET"
+            }).then(async res => {
+                if (res.status != 200) {
+                    window.location.href = "/error";
+                }
+                return res.json();
+            });
+
+            console.log(data);
+
+            for (let i = 0; i < data.board.length; i++) {
+                let tr = document.createElement("tr");
+                for (let j = 0; j < data.board[i].length; j++) {
+                    let td = document.createElement("td");
+
+                    if (data.board[i][j] == -4) {
+                        let span = document.createElement("span");
+                        span.innerText = "🟢";
+                        td.appendChild(span);
+                        tr.appendChild(td);
+
+                    } else if (data.board[i][j] == -2) {
+                        let span = document.createElement("span");
+                        span.innerText = "💣";
+                        td.appendChild(span);
+                        tr.appendChild(td);
+                    } else if (data.board[i][j] == -3) {
+                        let span = document.createElement("span");
+                        span.innerText = "🇰🇵";
+                        td.appendChild(span);
+                        tr.appendChild(td);
+
+
+                    } else if (data.board[i][j] != 0) {
+                        let span = document.createElement("span");
+                        span.innerText = data.board[i][j];
+                        td.appendChild(span);
+                        tr.appendChild(td);
+                    } else {
+                        let a = document.createElement("a");
+                        a.onclick = async (e) => {
+                            e.preventDefault();
+                            let data = await fetch(`/api/g/${gameId}/spot/${playerId}/`, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify({
+                                    x: j,
+                                    y: i
+                                })
+                            });
+                            console.log(data);
+                            await loadBoard(gameId, playerId);
+                        };
+
+                        a.oncontextmenu = async (e) => {
+                            e.preventDefault();
+                            let data = await fetch(`/api/g/${gameId}/flag/${playerId}/`, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify({
+                                    x: j,
+                                    y: i
+                                })
+                            });
+                            console.log(data);
+                            await loadBoard(gameId, playerId);
+                        };
+
+                        a.innerText = "⚪";
+                        td.appendChild(a);
+                        tr.appendChild(td);
+                    }
+                }
+                $("#board").append(tr);
+            }
+        }
+
         $(document).ready(() => {
             const url = new URL(window.location.href);
-            console.log(url);
+            const gameId = url.pathname.split("/")[2];
+            const playerId = url.pathname.split("/")[4];
+            console.log(gameId, playerId);
+
+            fetch(`/api/g/${gameId}/check`, {
+                method: "GET"
+            }).then(res => {
+                if (res.status != 200) {
+                    window.location.href = "/";
+                }
+            });
+
+            loadBoard(gameId, playerId);
+
+            setInterval(async () => {
+                let data = await fetch(`/api/g/${gameId}/score/${playerId}`, {
+                    method: "GET"
+                }).then(res => {
+                    if (res.status != 200) {
+                        window.location.href = "/error";
+                    }
+                    return res.json();
+                });
+
+                console.log(data);
+
+                if (playerId == "1") {
+                    $("#playerScore").text(data.player1);
+                    $("#opponentScore").text(data.player2);
+                } else {
+                    $("#playerScore").text(data.player2);
+                    $("#opponentScore").text(data.player1);
+                }
+
+                if (data.gameState == 0) {
+                    $("#gameState").text("Wating for Opponent...");
+                } else if (data.gameState == 1) {
+                    $("#gameState").text("Ongoing...");
+                } else if (data.gameState == 2) {
+                    $("#gameState").text("Game Over...");
+                }
+
+            }, 1000);
+
         });
     </script>
 </head>
 
 <body>
-    <table>
-        <tr>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-        </tr>
-        <tr>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-        </tr>
-        <tr>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-        </tr>
-        <tr>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-        </tr>
-        <tr>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-        </tr>
-        <tr>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-        </tr>
-        <tr>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-        </tr>
-        <tr>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-        </tr>
-        <tr>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-            <td><a href="">⚪</a></td>
-        </tr>
+    <table id="board">
     </table>
 
     <div class="center">
         <div>
-            <h2>Your Score 😁 <span>0</span></h2>
-            <h2>Opponent Score 😈 <span>0</span></h2>
+            <h2>Your Score 😁 <span id="playerScore">0</span></h2>
+            <h2>Opponent Score 😈 <span id="opponentScore">0</span></h2>
+            <h4><span id="gameState">Loading..</span></h4>
         </div>
     </div>
 </body>

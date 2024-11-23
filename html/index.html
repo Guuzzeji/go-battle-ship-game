@@ -70,6 +70,12 @@
             });
 
             $("#joinGame").on("click", async () => {
+
+                if (gameId == "") {
+                    gameId = $("#gameId").val();
+                    return;
+                }
+
                 let res = await fetch(`/api/g/${gameId}/join`, {
                     method: "POST"
                 });

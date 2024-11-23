@@ -33,8 +33,12 @@ func createGame(c *gin.Context) {
 
 func joinGame(c *gin.Context) {
 	gameId := c.Param("id")
-	id := RandomString(4)
-	clients[gameId].AddPlayer(id)
+	id, err := clients[gameId].AddPlayer()
+
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+	}
+
 	c.JSON(200, gin.H{"id": id})
 }
 
@@ -48,14 +52,14 @@ func addMine(c *gin.Context) {
 		return
 	}
 
-	_, err := clients[id].SetPlayerMine(playerId, body.X, body.Y)
+	err := clients[id].SetPlayerMine(playerId, body.X, body.Y)
 
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(200, clients[id].Players[playerId])
+	c.JSON(200, gin.H{"done": true})
 }
 
 func gameShoot(c *gin.Context) {
@@ -68,9 +72,15 @@ func gameShoot(c *gin.Context) {
 		return
 	}
 
-	clients[id].Shoot(playerId, body.X, body.Y)
+	err := clients[id].Shoot(playerId, body.X, body.Y)
+
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
 	clients[id].CheckWin()
-	c.JSON(200, clients[id].Players[playerId])
+	c.JSON(200, gin.H{"done": true})
 }
 
 func gameFlag(c *gin.Context) {
@@ -83,26 +93,56 @@ func gameFlag(c *gin.Context) {
 		return
 	}
 
-	clients[id].MarkFlag(playerId, body.X, body.Y)
+	err := clients[id].MarkFlag(playerId, body.X, body.Y)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
 	clients[id].CheckWin()
-	c.JSON(200, clients[id].Players[playerId])
+	c.JSON(200, gin.H{"done": true})
 }
 
 func gameScore(c *gin.Context) {
+	if _, ok := clients[c.Param("id")]; !ok {
+		c.JSON(400, gin.H{"error": "game not found"})
+		return
+	}
+
 	id := c.Param("id")
-	c.JSON(200, clients[id])
+	c.JSON(200, gin.H{
+		"player1":      clients[id].PlayerOne.Points,
+		"player2":      clients[id].PlayerTwo.Points,
+		"gameState":    clients[id].GameState,
+		"player1mines": clients[id].PlayerOne.Mines,
+		"player2mines": clients[id].PlayerTwo.Mines,
+	})
 }
 
 func gameBoard(c *gin.Context) {
-	c.JSON(200, clients[c.Param("id")].Players[c.Param("playerid")])
+	if _, ok := clients[c.Param("id")]; !ok {
+		c.JSON(400, gin.H{"error": "game not found"})
+		return
+	}
+
+	if c.Param("playerid") != "2" && c.Param("playerid") != "1" {
+		c.JSON(400, gin.H{"error": "player id not found"})
+	}
+
+	if c.Param("playerid") == "1" {
+		c.JSON(200, gin.H{"board": clients[c.Param("id")].PlayerOne.InputBoard})
+		return
+	}
+
+	c.JSON(200, gin.H{"board": clients[c.Param("id")].PlayerTwo.InputBoard})
+
 }
 
 func gameCheck(c *gin.Context) {
 	_, ok := clients[c.Param("id")]
-
 	if ok {
 		c.JSON(200, gin.H{"good": true})
 	}
 
-	c.JSON(200, gin.H{"good": false})
+	c.JSON(400, gin.H{"good": false})
 }

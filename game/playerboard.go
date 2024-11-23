@@ -119,6 +119,7 @@ func (pb *PlayerBoard) Shoot(opponent *PlayerBoard, col int, row int) error {
 	if opponent.Board[row][col] == mine {
 		pb.InputBoard[row][col] = hitMine
 		pb.Points += hitMinePoint
+		opponent.Mines--
 	} else if opponent.Board[row][col] == 0 {
 		pb.InputBoard[row][col] = -4
 		pb.Points += generalPoint
@@ -154,6 +155,7 @@ func (pb *PlayerBoard) MarkFlag(opponent *PlayerBoard, col int, row int) error {
 	if opponent.Board[row][col] == mine {
 		pb.InputBoard[row][col] = flag
 		pb.Points += goodFlagPoint
+		opponent.Mines--
 	} else {
 		pb.InputBoard[row][col] = flag
 		pb.Points += badFlagPoint

@@ -9,44 +9,62 @@ const (
 )
 
 type GameLogic struct {
-	Players   map[string]*PlayerBoard
-	GameState int
+	PlayerOne         *PlayerBoard
+	PlayerTwo         *PlayerBoard
+	PlayerOneSelected bool
+	PlayerTwoSelected bool
+	GameState         int
 }
 
 func NewGameLogic() *GameLogic {
 	return &GameLogic{
-		Players:   make(map[string]*PlayerBoard),
-		GameState: SetUp,
+		PlayerOne:         NewPlayerBoard("1"),
+		PlayerTwo:         NewPlayerBoard("2"),
+		PlayerOneSelected: false,
+		PlayerTwoSelected: false,
+		GameState:         SetUp,
 	}
 }
 
-func (g *GameLogic) AddPlayer(name string) error {
+func (g *GameLogic) AddPlayer() (string, error) {
 	if g.GameState == SetUp {
-		g.Players[name] = NewPlayerBoard(name)
+		if !g.PlayerOneSelected {
+			g.PlayerOneSelected = true
+			return "1", nil
+		} else if !g.PlayerTwoSelected {
+			g.PlayerTwoSelected = true
+			return "2", nil
+		}
+	}
 
-		if len(g.Players) >= 2 && g.GameState == SetUp {
+	return "", fmt.Errorf("game not set up state")
+}
+
+func (g *GameLogic) SetPlayerMine(id string, x int, y int) error {
+	if g.GameState == SetUp {
+		if id[0] == '1' {
+			g.PlayerOne.SetMine(x, y)
+		} else {
+			g.PlayerTwo.SetMine(x, y)
+		}
+
+		if g.PlayerOne.Mines >= maxMines && g.PlayerTwo.Mines >= maxMines && g.GameState == SetUp {
 			g.GameState = Playing
 			return nil
 		}
+
+		return nil
 	}
 
 	return fmt.Errorf("game not set up state")
 }
 
-func (g *GameLogic) SetPlayerMine(Id string, x int, y int) (int, error) {
-	if g.GameState == SetUp {
-		return g.Players[Id].SetMine(x, y)
-	}
-
-	return -1, fmt.Errorf("game not set up state")
-}
-
 func (g *GameLogic) Shoot(id string, x int, y int) error {
-	if g.GameState != Playing {
-		for k := range g.Players {
-			if k != id {
-				return g.Players[id].Shoot(g.Players[k], x, y)
-			}
+	if g.GameState == Playing {
+		if id == "1" {
+			return g.PlayerOne.Shoot(g.PlayerTwo, x, y)
+		} else {
+			return g.PlayerTwo.Shoot(g.PlayerOne, x, y)
 		}
 	}
 
@@ -54,11 +72,11 @@ func (g *GameLogic) Shoot(id string, x int, y int) error {
 }
 
 func (g *GameLogic) MarkFlag(id string, x int, y int) error {
-	if g.GameState != Playing {
-		for k := range g.Players {
-			if k != id {
-				return g.Players[id].MarkFlag(g.Players[k], x, y)
-			}
+	if g.GameState == Playing {
+		if id == "1" {
+			return g.PlayerOne.MarkFlag(g.PlayerTwo, x, y)
+		} else {
+			return g.PlayerTwo.MarkFlag(g.PlayerOne, x, y)
 		}
 	}
 
@@ -66,15 +84,14 @@ func (g *GameLogic) MarkFlag(id string, x int, y int) error {
 }
 
 func (g *GameLogic) CheckWin() (bool, string) {
-	player1 := g.Players[GetKeys(g.Players)[0]]
-	player2 := g.Players[GetKeys(g.Players)[1]]
-
-	if player1.Mines <= 0 {
-		g.GameState = GameOver
-		return true, player2.Id
-	} else if player2.Mines <= 0 {
-		g.GameState = GameOver
-		return true, player1.Id
+	if g.PlayerOne.Mines <= 0 && g.PlayerTwo.Mines <= 0 {
+		if g.PlayerOne.Points > g.PlayerTwo.Points {
+			g.GameState = GameOver
+			return true, "1"
+		} else if g.PlayerOne.Points < g.PlayerTwo.Points {
+			g.GameState = GameOver
+			return true, "2"
+		}
 	}
 
 	return false, ""
