@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.⚪">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js"
+        integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
+    <title>💣 Minesweeper</title>
+    <style>
+        body {
+            padding: 25px;
+        }
+
+        .center {
+            margin: 25px auto;
+            text-align: center;
+        }
+
+        td {
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+            padding: 25px;
+            width: 10px;
+            height: 10px;
+            top: 50%;
+            left: 50%;
+            border-width: 1px;
+            border-style: solid;
+            border-color: var(--color-grey);
+        }
+
+        a {
+            text-decoration: none;
+            pointer-events: none;
+            color: var(--font-color);
+        }
+
+        table {
+            /* width: 300px; */
+            /* height: 50vh; */
+            border-width: 1px;
+            border-style: solid;
+        }
+    </style>
+
+    <script>
+        $(document).ready(() => {
+            const url = new URL(window.location.href);
+            console.log(url);
+        });
+    </script>
+</head>
+
+<body>
+    <table>
+        <tr>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+        </tr>
+        <tr>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+        </tr>
+        <tr>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+        </tr>
+        <tr>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+        </tr>
+        <tr>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+        </tr>
+        <tr>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+        </tr>
+        <tr>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+        </tr>
+        <tr>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+        </tr>
+        <tr>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+            <td><a href="">⚪</a></td>
+        </tr>
+    </table>
+
+    <div class="center">
+        <div>
+            <h2>Your Score 😁 <span>0</span></h2>
+            <h2>Opponent Score 😈 <span>0</span></h2>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -9,16 +9,20 @@ import (
 var clients = make(map[string]*game.GameLogic)
 
 type GamePosition struct {
-	X int    `json:"x"`
-	Y string `json:"y"`
+	X int `json:"x"`
+	Y int `json:"y"`
 }
 
 func CreateAPIGroup(router *gin.RouterGroup) {
-	router.POST("/api/create-game", createGame)
-	router.POST("/api/g/:id/join-game", joinGame)
-	router.POST("/api/g/:id/shoot/:playerid", gameShoot)
-	router.POST("/api/g/:id/add-ship/:playerid", addShip)
-	router.GET("/api/g/:id/board/:playerid", getBoard)
+	router.POST("/api/create", createGame)
+	router.POST("/api/g/:id/join", joinGame)
+	router.POST("/api/g/:id/spot/:playerid", gameShoot)
+	router.POST("/api/g/:id/add-mine/:playerid", addMine)
+	router.POST("/api/g/:id/flag/:playerid", gameFlag)
+
+	router.GET("/api/g/:id/score/:playerid", gameScore)
+	router.GET("/api/g/:id/board/:playerid", gameBoard)
+	router.GET("/api/g/:id/check", gameCheck)
 }
 
 func createGame(c *gin.Context) {
@@ -34,13 +38,7 @@ func joinGame(c *gin.Context) {
 	c.JSON(200, gin.H{"id": id})
 }
 
-func getBoard(c *gin.Context) {
-	id := c.Param("id")
-	playerId := c.Param("playerid")
-	c.JSON(200, clients[id].Players[playerId])
-}
-
-func addShip(c *gin.Context) {
+func addMine(c *gin.Context) {
 	id := c.Param("id")
 	playerId := c.Param("playerid")
 
@@ -50,7 +48,7 @@ func addShip(c *gin.Context) {
 		return
 	}
 
-	_, err := clients[id].SetShips(playerId, body.X, body.Y)
+	_, err := clients[id].SetPlayerMine(playerId, body.X, body.Y)
 
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
@@ -71,5 +69,40 @@ func gameShoot(c *gin.Context) {
 	}
 
 	clients[id].Shoot(playerId, body.X, body.Y)
+	clients[id].CheckWin()
+	c.JSON(200, clients[id].Players[playerId])
+}
+
+func gameFlag(c *gin.Context) {
+	id := c.Param("id")
+	playerId := c.Param("playerid")
+
+	var body GamePosition
+	if err := c.ShouldBindJSON(&body); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	clients[id].MarkFlag(playerId, body.X, body.Y)
+	clients[id].CheckWin()
+	c.JSON(200, clients[id].Players[playerId])
+}
+
+func gameScore(c *gin.Context) {
+	id := c.Param("id")
 	c.JSON(200, clients[id])
+}
+
+func gameBoard(c *gin.Context) {
+	c.JSON(200, clients[c.Param("id")].Players[c.Param("playerid")])
+}
+
+func gameCheck(c *gin.Context) {
+	_, ok := clients[c.Param("id")]
+
+	if ok {
+		c.JSON(200, gin.H{"good": true})
+	}
+
+	c.JSON(200, gin.H{"good": false})
 }

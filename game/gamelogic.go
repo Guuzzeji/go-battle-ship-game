@@ -9,10 +9,8 @@ const (
 )
 
 type GameLogic struct {
-	Players     map[string]*PlayerBoard
-	GameState   int
-	currentTurn string
-	opponent    string
+	Players   map[string]*PlayerBoard
+	GameState int
 }
 
 func NewGameLogic() *GameLogic {
@@ -28,11 +26,6 @@ func (g *GameLogic) AddPlayer(name string) error {
 
 		if len(g.Players) >= 2 && g.GameState == SetUp {
 			g.GameState = Playing
-
-			m := GetKeys(g.Players)
-
-			g.currentTurn = g.Players[m[0]].Id
-			g.opponent = g.Players[m[1]].Id
 			return nil
 		}
 	}
@@ -40,34 +33,46 @@ func (g *GameLogic) AddPlayer(name string) error {
 	return fmt.Errorf("game not set up state")
 }
 
-func (g *GameLogic) SetShips(Id string, x int, y string) (bool, error) {
+func (g *GameLogic) SetPlayerMine(Id string, x int, y int) (int, error) {
 	if g.GameState == SetUp {
-		return g.Players[Id].SetShips(x, y)
+		return g.Players[Id].SetMine(x, y)
 	}
 
-	return false, fmt.Errorf("game not set up state")
+	return -1, fmt.Errorf("game not set up state")
 }
 
-func (g *GameLogic) Shoot(Id string, x int, y string) (int, error) {
+func (g *GameLogic) Shoot(id string, x int, y int) error {
 	if g.GameState != Playing {
 		for k := range g.Players {
-			if k != Id {
-				return g.Players[k].Shoot(g.Players[k], x, y)
+			if k != id {
+				return g.Players[id].Shoot(g.Players[k], x, y)
 			}
 		}
 	}
 
-	return -1, fmt.Errorf("game not playing state")
+	return fmt.Errorf("game not playing state")
+}
+
+func (g *GameLogic) MarkFlag(id string, x int, y int) error {
+	if g.GameState != Playing {
+		for k := range g.Players {
+			if k != id {
+				return g.Players[id].MarkFlag(g.Players[k], x, y)
+			}
+		}
+	}
+
+	return fmt.Errorf("game not playing state")
 }
 
 func (g *GameLogic) CheckWin() (bool, string) {
 	player1 := g.Players[GetKeys(g.Players)[0]]
 	player2 := g.Players[GetKeys(g.Players)[1]]
 
-	if player1.ShipPlaced <= 0 {
+	if player1.Mines <= 0 {
 		g.GameState = GameOver
 		return true, player2.Id
-	} else if player2.ShipPlaced <= 0 {
+	} else if player2.Mines <= 0 {
 		g.GameState = GameOver
 		return true, player1.Id
 	}

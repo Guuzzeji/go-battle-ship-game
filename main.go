@@ -11,6 +11,7 @@ var server = gin.Default()
 func main() {
 	router := server.Group("")
 	routes.CreateAPIGroup(router)
+	routes.CreateClientGroup(server)
 
 	server.Run(":8080")
 }
