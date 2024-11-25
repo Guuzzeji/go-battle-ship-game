@@ -17,14 +17,14 @@ const (
 
 const (
 	generalPoint  = 1
-	hitMinePoint  = -10
+	hitMinePoint  = -25
 	goodFlagPoint = 25
-	badFlagPoint  = -20
+	badFlagPoint  = -15
 )
 
 type PlayerBoard struct {
 	Id         string
-	Board      [boardSize][boardSize]int
+	board      [boardSize][boardSize]int
 	InputBoard [boardSize][boardSize]int
 	Mines      int
 	Points     int
@@ -33,23 +33,23 @@ type PlayerBoard struct {
 func NewPlayerBoard(Id string) *PlayerBoard {
 	return &PlayerBoard{
 		Id:         Id,
-		Board:      [boardSize][boardSize]int{},
+		board:      [boardSize][boardSize]int{},
 		InputBoard: [boardSize][boardSize]int{},
 		Mines:      0,
 		Points:     0,
 	}
 }
 
-// Function to place ships on the Board
+// Function to place ships on the board
 func (pb *PlayerBoard) SetMine(col int, row int) (int, error) {
 	if pb.Mines < maxMines {
 		if row < 0 || row >= boardSize || col < 0 || col >= boardSize {
 			return 0, fmt.Errorf("out of bounds")
-		} else if pb.Board[row][col] == mine {
+		} else if pb.board[row][col] == mine {
 			return 0, fmt.Errorf("mine already placed there")
 		}
 
-		pb.Board[row][col] = mine
+		pb.board[row][col] = mine
 		pb.calcBoard()
 		pb.Mines++
 	} else {
@@ -62,44 +62,44 @@ func (pb *PlayerBoard) SetMine(col int, row int) (int, error) {
 func (pd *PlayerBoard) calcBoard() {
 	for i := 0; i < boardSize; i++ {
 		for j := 0; j < boardSize; j++ {
-			if pd.Board[i][j] == mine {
+			if pd.board[i][j] == mine {
 				continue
 			}
 
 			numMines := 0
-			if (i+1) < boardSize && pd.Board[i+1][j] == mine {
+			if (i+1) < boardSize && pd.board[i+1][j] == mine {
 				numMines++
 			}
 
-			if (i-1) >= 0 && pd.Board[i-1][j] == mine {
+			if (i-1) >= 0 && pd.board[i-1][j] == mine {
 				numMines++
 			}
 
-			if (j+1) < boardSize && pd.Board[i][j+1] == mine {
+			if (j+1) < boardSize && pd.board[i][j+1] == mine {
 				numMines++
 			}
 
-			if (j-1) >= 0 && pd.Board[i][j-1] == mine {
+			if (j-1) >= 0 && pd.board[i][j-1] == mine {
 				numMines++
 			}
 
-			if (i+1 < boardSize) && (j-1 >= 0) && pd.Board[i+1][j-1] == mine {
+			if (i+1 < boardSize) && (j-1 >= 0) && pd.board[i+1][j-1] == mine {
 				numMines++
 			}
 
-			if (i-1 >= 0) && (j-1 >= 0) && pd.Board[i-1][j-1] == mine {
+			if (i-1 >= 0) && (j-1 >= 0) && pd.board[i-1][j-1] == mine {
 				numMines++
 			}
 
-			if (i+1 < boardSize) && (j+1 < boardSize) && pd.Board[i+1][j+1] == mine {
+			if (i+1 < boardSize) && (j+1 < boardSize) && pd.board[i+1][j+1] == mine {
 				numMines++
 			}
 
-			if (i-1 >= 0) && (j+1 < boardSize) && pd.Board[i-1][j+1] == mine {
+			if (i-1 >= 0) && (j+1 < boardSize) && pd.board[i-1][j+1] == mine {
 				numMines++
 			}
 
-			pd.Board[i][j] = numMines
+			pd.board[i][j] = numMines
 		}
 	}
 }
@@ -116,11 +116,11 @@ func (pb *PlayerBoard) Shoot(opponent *PlayerBoard, col int, row int) error {
 		return fmt.Errorf("already shot there")
 	}
 
-	if opponent.Board[row][col] == mine {
+	if opponent.board[row][col] == mine {
 		pb.InputBoard[row][col] = hitMine
 		pb.Points += hitMinePoint
 		opponent.Mines--
-	} else if opponent.Board[row][col] == 0 {
+	} else if opponent.board[row][col] == 0 {
 		pb.InputBoard[row][col] = -4
 		pb.Points += generalPoint
 
@@ -133,9 +133,9 @@ func (pb *PlayerBoard) Shoot(opponent *PlayerBoard, col int, row int) error {
 		go pb.Shoot(opponent, col-1, row+1)
 		go pb.Shoot(opponent, col+1, row-1)
 
-	} else if opponent.Board[row][col] > 0 {
-		pb.InputBoard[row][col] = opponent.Board[row][col]
-		pb.Points += goodFlagPoint
+	} else if opponent.board[row][col] > 0 {
+		pb.InputBoard[row][col] = opponent.board[row][col]
+		pb.Points += generalPoint
 	}
 
 	return nil
@@ -152,7 +152,7 @@ func (pb *PlayerBoard) MarkFlag(opponent *PlayerBoard, col int, row int) error {
 		return fmt.Errorf("already shot there")
 	}
 
-	if opponent.Board[row][col] == mine {
+	if opponent.board[row][col] == mine {
 		pb.InputBoard[row][col] = flag
 		pb.Points += goodFlagPoint
 		opponent.Mines--
