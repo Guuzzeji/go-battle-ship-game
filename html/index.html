@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <title>💣 Minesweeper</title>
+    <style>
+        body {
+            padding: 25px;
+        }
+
+        input {
+            width: 100%;
+        }
+
+        .center {
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .center-screen {
+            position: absolute;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        a {
+            padding: 10px;
+        }
+
+        h1 {
+            padding: 10px;
+        }
+    </style>
+
+    <script>
+        let playerId = "";
+        let gameId = "";
+
+        $(document).ready(() => {
+            $("#main").hide();
+            $("#main").fadeIn("slow");
+
+            $("#createGame").on("click", async () => {
+                $("#createGame").prop("disabled", true);
+                $("#joinGame").prop("disabled", true);
+                let res = await fetch("/api/create", {
+                    method: "POST"
+                });
+
+                if (res.status != 200) {
+                    window.location.href = "/error";
+                    return;
+                }
+
+                let data = await res.json();
+                gameId = data.id;
+
+                $("#gameId").prop("disabled", true);
+                $("#gameId").val(data.id);
+                $("#joinGame").prop("disabled", false);
+            });
+
+            $("#joinGame").on("click", async () => {
+                if (gameId == "") {
+                    gameId = $("#gameId").val();
+                }
+
+                let res = await fetch(`/api/g/${gameId}/join`, {
+                    method: "POST"
+                });
+
+                if (res.status != 200) {
+                    window.location.href = "/error";
+                    return;
+                }
+
+                let data = await res.json();
+                playerId = data.id;
+
+                window.location.href = `/setup/${gameId}/p/${playerId}`;
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <div id="main" class="center-screen">
+        <h1>💣 Minesweeper</h1>
+        <input id="gameId" type="text" placeholder="Game ID">
+        <div style="padding: 10px;">
+            <button id="createGame" class="button">Create</button>
+            <button id="joinGame" class="button primary">Join</button>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.⚪">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <title>💣 Minesweeper</title>
+    <style>
+        body {
+            padding: 25px;
+        }
+
+        .center {
+            margin: 25px auto;
+            text-align: center;
+        }
+
+        td {
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+            padding: 25px;
+            width: 10px;
+            height: 10px;
+            top: 50%;
+            left: 50%;
+            font-size: 30px;
+            /* border-width: 1px;
+            border-style: solid;
+            border-color: var(--color-grey); */
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--font-color);
+        }
+
+        a:hover {
+            text-decoration: none;
+            color: var(--font-color);
+        }
+    </style>
+
+    <script>
+
+        async function loadBoard(gameId, playerId) {
+            $("#board").empty();
+            let data = await fetch(`/api/g/${gameId}/board/${playerId}`, {
+                method: "GET"
+            }).then(async res => {
+                if (res.status != 200) {
+                    window.location.href = "/error";
+                }
+                return res.json();
+            });
+
+            console.log(data);
+
+            for (let i = 0; i < data.board.length; i++) {
+                let tr = document.createElement("tr");
+                for (let j = 0; j < data.board[i].length; j++) {
+                    let td = document.createElement("td");
+
+                    if (data.board[i][j] == -4) {
+                        let span = document.createElement("span");
+                        span.innerText = "🟢";
+                        td.appendChild(span);
+                        tr.appendChild(td);
+
+                    } else if (data.board[i][j] == -2) {
+                        let span = document.createElement("span");
+                        span.innerText = "💣";
+                        td.appendChild(span);
+                        tr.appendChild(td);
+                    } else if (data.board[i][j] == -3) {
+                        let span = document.createElement("span");
+                        span.innerText = "🚩";
+                        td.appendChild(span);
+                        tr.appendChild(td);
+
+
+                    } else if (data.board[i][j] != 0) {
+                        let span = document.createElement("span");
+                        span.innerText = data.board[i][j];
+                        td.appendChild(span);
+                        tr.appendChild(td);
+                    } else {
+                        let a = document.createElement("a");
+                        a.onclick = async (e) => {
+                            e.preventDefault();
+                            let data = await fetch(`/api/g/${gameId}/spot/${playerId}/`, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify({
+                                    x: j,
+                                    y: i
+                                })
+                            });
+                            console.log(data);
+                            await loadBoard(gameId, playerId);
+                        };
+
+                        a.oncontextmenu = async (e) => {
+                            e.preventDefault();
+                            let data = await fetch(`/api/g/${gameId}/flag/${playerId}/`, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify({
+                                    x: j,
+                                    y: i
+                                })
+                            });
+                            console.log(data);
+                            await loadBoard(gameId, playerId);
+                        };
+
+                        a.innerText = "⚪";
+                        td.appendChild(a);
+                        tr.appendChild(td);
+                    }
+                }
+                $("#board").append(tr);
+            }
+        }
+
+        $(document).ready(() => {
+            $("#main").hide();
+            $("#main").fadeIn("slow");
+            const url = new URL(window.location.href);
+            const gameId = url.pathname.split("/")[2];
+            const playerId = url.pathname.split("/")[4];
+            console.log(gameId, playerId);
+
+            fetch(`/api/g/${gameId}/check`, {
+                method: "GET"
+            }).then(res => {
+                if (res.status != 200) {
+                    window.location.href = "/";
+                }
+            });
+
+            loadBoard(gameId, playerId);
+
+            setInterval(async () => {
+                let data = await fetch(`/api/g/${gameId}/score/${playerId}`, {
+                    method: "GET"
+                }).then(res => {
+                    if (res.status != 200) {
+                        window.location.href = "/error";
+                    }
+                    return res.json();
+                });
+
+                console.log(data);
+
+                if (playerId == "1") {
+                    $("#playerScore").text(data.player1);
+                    $("#opponentScore").text(data.player2);
+                } else {
+                    $("#playerScore").text(data.player2);
+                    $("#opponentScore").text(data.player1);
+                }
+
+                if (data.gameState == 0) {
+                    $("#gameState").text("Wating for Opponent...");
+                } else if (data.gameState == 1) {
+                    $("#gameState").text("Ongoing...");
+                } else if (data.gameState == 2) {
+                    $("#gameState").text("Game Over...");
+                }
+
+            }, 300);
+
+        });
+    </script>
+</head>
+
+<body>
+    <div id="main">
+        <table id="board">
+        </table>
+        <hr>
+        <div class="center">
+            <div>
+                <h3>Your Score 😁 <span id="playerScore">0</span></h3>
+                <h3>Opponent Score 😈 <span id="opponentScore">0</span></h3>
+                <h4><span id="gameState">Loading..</span></h4>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
