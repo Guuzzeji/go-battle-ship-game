@@ -31,7 +31,7 @@ Make sure you have Go installed on your system. You can download Go from [here](
 Clone the repository
 
 ```bash
-git clone https://github.com/Guuzzeji/go-minesweaper-multiplayer.git
+git clone https://github.com/Guuzzeji/go-minesweeper-multiplayer.git
 ```
 
 **Step 2** 
