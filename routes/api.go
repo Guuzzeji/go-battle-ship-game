@@ -8,7 +8,7 @@ import (
 
 var clients = make(map[string]*game.GameLogic)
 
-type GamePosition struct {
+type gamePosition struct {
 	X int `json:"x"`
 	Y int `json:"y"`
 }
@@ -41,7 +41,7 @@ func CreateAPIGroup(router *gin.RouterGroup) {
 
 	router.GET("/api/g/:id/score/:playerid", getScore)
 	router.GET("/api/g/:id/board/:playerid", getPlayerBoard)
-	router.GET("/api/g/:id/check", checkSession)
+	router.GET("/api/g/:id/check", checkGameSession)
 }
 
 func createGameSession(c *gin.Context) {
@@ -73,7 +73,7 @@ func addMine(c *gin.Context) {
 		return
 	}
 
-	var body GamePosition
+	var body gamePosition
 	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -97,7 +97,7 @@ func placeSpot(c *gin.Context) {
 		return
 	}
 
-	var body GamePosition
+	var body gamePosition
 	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -123,7 +123,7 @@ func placeFlag(c *gin.Context) {
 		return
 	}
 
-	var body GamePosition
+	var body gamePosition
 	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -178,7 +178,7 @@ func getPlayerBoard(c *gin.Context) {
 
 }
 
-func checkSession(c *gin.Context) {
+func checkGameSession(c *gin.Context) {
 	_, ok := clients[c.Param("id")]
 	if ok {
 		c.JSON(200, gin.H{"good": true})
