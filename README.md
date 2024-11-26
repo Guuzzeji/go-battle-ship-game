@@ -12,21 +12,13 @@ This is a multiplayer minesweeper game using Go and Gin. It is a web application
 
 ## ⭐ Screenshots
 
-<p align="center">
-    <img width="500px" src="./assets/screenshot-0.png">
-</p>
+![screenshot-0](./assets/screenshot-0.png)
 
-<p align="center">
-    <img width="500px" src="./assets/screenshot-3.png">
-</p>
+![screenshot-3](./assets/screenshot-3.png)
 
-<p align="center">
-    <img width="500px" src="./assets/screenshot-1.png">
-</p>
+![screenshot-1](./assets/screenshot-1.png)
 
-<p align="center">
-    <img width="500px" src="./assets/screenshot-2.png">
-</p>
+![screenshot-2](./assets/screenshot-2.png)
 
 ## 📜 Prerequisites
 
