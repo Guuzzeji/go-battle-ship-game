@@ -34,10 +34,17 @@ Clone the repository
 git clone https://github.com/Guuzzeji/go-minesweaper-multiplayer.git
 ```
 
-
 **Step 2** 
 
-Open the project directory and run 
+Open the project directory and run to install dependencies
+
+```bash
+go get ./...
+```
+
+**Step 3** 
+
+Then run 
 
 ```bash
 go run main.go
@@ -64,7 +71,7 @@ make build-local
 first to build the server for your machine.
 
 
-**Step 3** 
+**Step 4** 
 
 Go to 
 
