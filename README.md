@@ -2,8 +2,9 @@
     <img width="300px" src="./assets/logo.png">
 </p>
 
-# Go CSCI-343 Group Project (Go-Minesweeper-Multiplayer)
+# Go Minesweeper Multiplayer
 
+**CSCI-343 Group Project**
 
 **Created by Gabe & Bryant**
 
