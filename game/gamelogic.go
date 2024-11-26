@@ -114,15 +114,13 @@ func (g *GameLogic) MarkFlag(id string, x int, y int) error {
 // returns false and an empty string.
 func (g *GameLogic) CheckWin() (bool, string) {
 	if g.PlayerOne.Mines <= 0 && g.PlayerTwo.Mines <= 0 {
+		g.GameState = gameover
 		if g.PlayerOne.Points > g.PlayerTwo.Points {
-			g.GameState = gameover
 			return true, "1"
-
 		} else if g.PlayerOne.Points < g.PlayerTwo.Points {
-			g.GameState = gameover
 			return true, "2"
 		}
+		return true, "0"
 	}
-
 	return false, ""
 }
