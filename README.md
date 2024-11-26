@@ -45,12 +45,42 @@ git clone https://github.com/Guuzzeji/go-minesweaper-multiplayer.git
 
 **Step 2** 
 
-Open the project directory and run `go run main.go` or `make go-run` to start the server.
+Open the project directory and run 
 
-You can also run `make build-run` to run it locally as a static binary. If you use `make build-run`, make sure to do `make build-local` first to build the server for your mac.
+```bash
+go run main.go
+``` 
+
+or 
+
+```bash
+make go-run
+``` 
+
+to start the server. You can also run 
+
+```bash
+make build-run
+``` 
+
+to run it locally as a static binary. If you use `make build-run`, make sure to do 
+
+```bash
+make build-local
+```
+
+first to build the server for your machine.
 
 
-**Step 3** Go to `http://localhost:8080` to play the game
+**Step 3** 
+
+Go to 
+
+```bash
+http://localhost:8080
+``` 
+
+to play the game
 
 ## License
 
