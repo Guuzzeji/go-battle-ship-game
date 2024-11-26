@@ -5,22 +5,16 @@ import (
 	"time"
 )
 
-var seededRand *rand.Rand = rand.New(
-	rand.NewSource(time.Now().UnixNano()))
+// Used for random string generation
+var seedRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
 
-func RandomString(length int) string {
+// RandomString generates a random string of the specified length using a set of
+// alphanumeric characters (both uppercase and lowercase letters, and digits).
+func randomString(length int) string {
 	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	result := make([]byte, length)
 	for i := range result {
 		result[i] = charset[rand.Intn(len(charset))]
 	}
 	return string(result)
-}
-
-func GetKeys[T comparable, V any](m map[T]V) []T {
-	keys := make([]T, 0, len(m))
-	for k := range m {
-		keys = append(keys, k)
-	}
-	return keys
 }

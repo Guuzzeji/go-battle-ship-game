@@ -2,6 +2,13 @@ package routes
 
 import "github.com/gin-gonic/gin"
 
+// CreateClientGroup is a function that takes a gin router and
+// adds all the main routes to the client. The routes added are:
+// - GET /: Renders the index page.
+// - GET /play/:id/p/:playerid: Renders the game page.
+// - GET /setup/:id/p/:playerid: Renders the setup page.
+// - GET /error: Renders the error page.
+// - NoRoute: Handles 404 errors by rendering the error page.
 func CreateClientGroup(router *gin.Engine) {
 	router.LoadHTMLGlob("html/*")
 
