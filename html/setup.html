@@ -39,14 +39,17 @@
 
     <script>
         $(document).ready(() => {
+            // Load home page
             $("#main").hide();
             $("#main").fadeIn("slow");
 
+            // Game data
             const url = new URL(window.location.href);
             const gameId = url.pathname.split("/")[2];
             const playerId = url.pathname.split("/")[4];
             console.log(gameId, playerId);
 
+            // Health check to make sure the game is valid
             fetch(`/api/g/${gameId}/check`, {
                 method: "GET"
             }).then(res => {
@@ -55,17 +58,18 @@
                 }
             });
 
+            // Submit btn
             $("#submit").on("click", async () => {
                 let isReady = true;
                 for (const e of document.getElementsByTagName("input")) {
                     if (e != undefined) {
-                        let failRequest = false;
+                        let isFailRequest = false;
                         console.log(e);
                         if (e.value == "") {
                             isReady = false;
-                            failRequest = true;
+                            isFailRequest = true;
                         }
-                        if (!failRequest) {
+                        if (!isFailRequest) {
                             try {
                                 e.disabled = true;
                                 e.value = e.value.trim();
@@ -91,7 +95,7 @@
                             } catch (error) {
                                 console.log(error);
                                 isReady = false;
-                                failRequest = true;
+                                isFailRequest = true;
                                 e.disabled = false;
                             }
                         }
