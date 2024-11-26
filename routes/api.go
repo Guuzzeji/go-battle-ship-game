@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"go-battle-ship-game/game"
+	"go-minesweaper-multiplayer/game"
 
 	"github.com/gin-gonic/gin"
 )

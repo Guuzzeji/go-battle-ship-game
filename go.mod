@@ -1,4 +1,4 @@
-module go-battle-ship-game
+module go-minesweaper-multiplayer
 
 go 1.21.0
 
