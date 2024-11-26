@@ -1,9 +1,9 @@
 build-local:
 	mkdir -p dist
-	go build -o ./dist/main .
+	go build -o ./dist/server .
 
 build-run:
-	./dist/main
+	./dist/server
 
-run-go-server:
-	go run server.go
+go-run:
+	go run main.go

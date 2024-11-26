@@ -46,9 +46,11 @@
         let gameId = "";
 
         $(document).ready(() => {
+            // On load show home page
             $("#main").hide();
             $("#main").fadeIn("slow");
 
+            // Create btn
             $("#createGame").on("click", async () => {
                 $("#createGame").prop("disabled", true);
                 $("#joinGame").prop("disabled", true);
@@ -65,10 +67,26 @@
                 gameId = data.id;
 
                 $("#gameId").prop("disabled", true);
+                $("#gameId").prop("type", "button");
+                $("#gameId").prop("disabled", false);
                 $("#gameId").val(data.id);
                 $("#joinGame").prop("disabled", false);
             });
 
+            // When game id is of type button
+            $("#gameId").on("click", async () => {
+                if ($("#gameId").prop("type") == "button") {
+                    console.log(gameId);
+                    await navigator.clipboard.writeText(gameId);
+                    $("#gameIdCopy").fadeIn("slow");
+
+                    setTimeout(() => {
+                        $("#gameIdCopy").fadeOut("slow");
+                    }, 2000);
+                }
+            });
+
+            // Join btn
             $("#joinGame").on("click", async () => {
                 if (gameId == "") {
                     gameId = $("#gameId").val();
@@ -85,7 +103,6 @@
 
                 let data = await res.json();
                 playerId = data.id;
-
                 window.location.href = `/setup/${gameId}/p/${playerId}`;
             });
         });
@@ -96,6 +113,7 @@
     <div id="main" class="center-screen">
         <h1>💣 Minesweeper</h1>
         <input id="gameId" type="text" placeholder="Game ID">
+        <p hidden id="gameIdCopy">Copied Game ID to Clipboard</p>
         <div style="padding: 10px;">
             <button id="createGame" class="button">Create</button>
             <button id="joinGame" class="button primary">Join</button>

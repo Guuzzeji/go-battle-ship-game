@@ -46,8 +46,8 @@
 
     <script>
 
+        // Function used to load the board after each move
         async function loadBoard(gameId, playerId) {
-            $("#board").empty();
             let data = await fetch(`/api/g/${gameId}/board/${playerId}`, {
                 method: "GET"
             }).then(async res => {
@@ -59,17 +59,20 @@
 
             console.log(data);
 
+            $("#board").empty();
             for (let i = 0; i < data.board.length; i++) {
                 let tr = document.createElement("tr");
                 for (let j = 0; j < data.board[i].length; j++) {
                     let td = document.createElement("td");
 
+                    // When empty space should be visible
                     if (data.board[i][j] == -4) {
                         let span = document.createElement("span");
                         span.innerText = "🟢";
                         td.appendChild(span);
                         tr.appendChild(td);
 
+                        // Bomb
                     } else if (data.board[i][j] == -2) {
                         let span = document.createElement("span");
                         span.innerText = "💣";
@@ -81,14 +84,18 @@
                         td.appendChild(span);
                         tr.appendChild(td);
 
-
+                        // Number to where bombs are
                     } else if (data.board[i][j] != 0) {
                         let span = document.createElement("span");
                         span.innerText = data.board[i][j];
                         td.appendChild(span);
                         tr.appendChild(td);
                     } else {
+
+                        // Hidden space
                         let a = document.createElement("a");
+
+                        // Normal click
                         a.onclick = async (e) => {
                             e.preventDefault();
                             let data = await fetch(`/api/g/${gameId}/spot/${playerId}/`, {
@@ -105,6 +112,7 @@
                             await loadBoard(gameId, playerId);
                         };
 
+                        // Flag click
                         a.oncontextmenu = async (e) => {
                             e.preventDefault();
                             let data = await fetch(`/api/g/${gameId}/flag/${playerId}/`, {
@@ -131,13 +139,17 @@
         }
 
         $(document).ready(() => {
+            // load home page
             $("#main").hide();
             $("#main").fadeIn("slow");
+
+            // Game data
             const url = new URL(window.location.href);
             const gameId = url.pathname.split("/")[2];
             const playerId = url.pathname.split("/")[4];
             console.log(gameId, playerId);
 
+            // Game health check to make sure the game is valid
             fetch(`/api/g/${gameId}/check`, {
                 method: "GET"
             }).then(res => {
@@ -146,9 +158,11 @@
                 }
             });
 
+            // Load in board
             loadBoard(gameId, playerId);
 
-            setInterval(async () => {
+            // Game score update
+            const gameScoreUpdate = setInterval(async () => {
                 let data = await fetch(`/api/g/${gameId}/score/${playerId}`, {
                     method: "GET"
                 }).then(res => {
@@ -174,9 +188,9 @@
                     $("#gameState").text("Ongoing...");
                 } else if (data.gameState == 2) {
                     $("#gameState").text("Game Over...");
+                    clearInterval(gameScoreUpdate);
                 }
-
-            }, 300);
+            }, 250);
 
         });
     </script>
