@@ -35,6 +35,20 @@
             left: 50%;
             transform: translate(-50%, -50%);
         }
+
+        @media (max-width: 768px) {
+            .center {
+                flex-direction: column;
+            }
+        }
+
+        input::placeholder {
+            text-align: center;
+        }
+
+        input {
+            text-align: center;
+        }
     </style>
 
     <script>
