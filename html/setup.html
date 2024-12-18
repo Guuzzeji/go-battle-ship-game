@@ -60,53 +60,48 @@
 
             // Submit btn
             $("#submit").on("click", async () => {
-                let isReady = true;
+
                 for (const e of document.getElementsByTagName("input")) {
-                    if (e != undefined) {
-                        let isFailRequest = false;
-                        console.log(e);
-                        if (e.value == "") {
-                            isReady = false;
-                            isFailRequest = true;
-                        }
-                        if (!isFailRequest) {
-                            try {
-                                e.disabled = true;
-                                e.value = e.value.trim();
-                                let values = e.value.split(",");
-                                if (values.length != 2) {
-                                    e.disabled = false;
-                                    throw new Error("Not enough values");
-                                }
-                                let res = await fetch(`/api/g/${gameId}/add-mine/${playerId}`, {
-                                    method: "POST",
-                                    headers: {
-                                        "Content-Type": "application/json"
-                                    },
-                                    body: JSON.stringify({
-                                        x: parseInt(values[0]),
-                                        y: parseInt(values[1])
-                                    })
-                                }).then(res => res.json());
-                                if (!res.done) {
-                                    throw new Error(JSON.stringify(res));
-                                }
-                                console.log(res);
-                            } catch (error) {
-                                console.log(error);
-                                isReady = false;
-                                isFailRequest = true;
+                    if (e != undefined && e.value != "" && !e.disabled) {
+                        try {
+                            e.disabled = true;
+                            e.value = e.value.trim();
+                            let values = e.value.split(",");
+                            if (values.length != 2) {
                                 e.disabled = false;
+                                throw new Error("Not enough values");
                             }
+                            let res = await fetch(`/api/g/${gameId}/add-mine/${playerId}`, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify({
+                                    x: parseInt(values[0]),
+                                    y: parseInt(values[1])
+                                })
+                            }).then(res => res.json());
+                            if (!res.done) {
+                                throw new Error(JSON.stringify(res));
+                            }
+                            console.log(res);
+                        } catch (error) {
+                            console.log(error);
+                            e.disabled = false;
                         }
                     }
                 }
 
-                if (isReady) {
-                    window.location.href = `/play/${gameId}/p/${playerId}`;
-                } else {
-                    $("#error").fadeIn("slow");
+                for (const e of document.getElementsByTagName("input")) {
+                    if (e != undefined && e.value != "") {
+                        if (!e.disabled) {
+                            $("#error").fadeIn("slow");
+                            return;
+                        }
+                    }
                 }
+
+                window.location.href = `/play/${gameId}/p/${playerId}`;
             });
 
         });
