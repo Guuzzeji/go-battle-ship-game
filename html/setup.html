@@ -26,6 +26,13 @@
             display: flex;
         }
 
+        /** For mobile devices */
+        @media (max-width: 768px) {
+            .center {
+                flex-direction: column;
+            }
+        }
+
         .center-screen {
             position: absolute;
             justify-content: center;
@@ -34,12 +41,6 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-        }
-
-        @media (max-width: 768px) {
-            .center {
-                flex-direction: column;
-            }
         }
 
         input::placeholder {
@@ -74,31 +75,41 @@
 
             // Submit btn
             $("#submit").on("click", async () => {
-
+                // Looping through each input and trying to upload them
                 for (const e of document.getElementsByTagName("input")) {
-                    if (e != undefined && e.value != "" && !e.disabled) {
+                    if (e != undefined && !e.disabled) {
                         try {
                             e.disabled = true;
                             e.value = e.value.trim();
+
                             let values = e.value.split(",");
+                            console.log(values);
                             if (values.length != 2) {
                                 e.disabled = false;
                                 throw new Error("Not enough values");
                             }
+
+                            let minePosition = {
+                                x: parseInt(values[0]),
+                                y: parseInt(values[1])
+                            };
+                            if (minePosition.x == NaN || minePosition.y == NaN) {
+                                throw new Error("NaN");
+                            }
+
                             let res = await fetch(`/api/g/${gameId}/add-mine/${playerId}`, {
                                 method: "POST",
                                 headers: {
                                     "Content-Type": "application/json"
                                 },
-                                body: JSON.stringify({
-                                    x: parseInt(values[0]),
-                                    y: parseInt(values[1])
-                                })
+                                body: JSON.stringify(minePosition)
                             }).then(res => res.json());
+
                             if (!res.done) {
                                 throw new Error(JSON.stringify(res));
                             }
                             console.log(res);
+
                         } catch (error) {
                             console.log(error);
                             e.disabled = false;
@@ -106,15 +117,18 @@
                     }
                 }
 
+                // Loop through each input to see if any errors happen, if so show error
                 for (const e of document.getElementsByTagName("input")) {
-                    if (e != undefined && e.value != "") {
-                        if (!e.disabled) {
+                    if (e != undefined) {
+                        if (!e.disabled || e.value == "" || e.value == null) {
+                            console.log("Error");
                             $("#error").fadeIn("slow");
                             return;
                         }
                     }
                 }
 
+                // if no disable inputs then move to next page
                 window.location.href = `/play/${gameId}/p/${playerId}`;
             });
 
